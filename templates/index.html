@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewpoint" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstarp@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+  background: #C0C0C0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h4, h5, h6 {
+  color: #333;
+}
+
+#instructionBox ul {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.option input[type="radio"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+}
+
+.timer {
+  font-size: 20px;
+  color: #dc3545;
+}
+
+.btn {
+  border-radius: 8px;
+}
+         body { background: #E0E5E5; }
+    .card { max-width: 800px; margin: 40px auto; padding: 20px; border-radius: 12px; }
+    .option { display: block; margin-bottom: 10px; }
+    .timer { text-align: right; font-weight: bold; color: #dc3545; }
+    .question-box { margin-bottom: 20px; }
+    #quizSection { display: none; }
+        }
+        #resultBox {
+  background: #ffffff;
+  border-left: 5px solid #28a745;
+  padding: 30px;
+  font-size: 18px;
+}
+  </style>
+</head>
+<body>
+<!-- Instructions -->
+<div class="card mb-4" id="instructionBox">
+  <h4 class="text-center">📝 Quiz Instructions</h4>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">* You have 1 hour 30 minutes to complete the quiz.</li>
+    <li class="list-group-item">* There are 30 multiple choice questions with subject-wise Physics, Mathematics, Chemistry.</li>
+    <li class="list-group-item">* 3 questions appear per page.</li>
+    <li class="list-group-item">* Each question has one correct answer.</li>
+    <li class="list-group-item">* You can move forward and backward between pages.</li>
+    <li class="list-group-item">* Quiz will auto-submit when time runs out.</li>
+    <li class="list-group-item">* Enter your name to begin.</li>
+  </ul>
+</div>
+<!-- Login Form -->
+<div id="loginSection" class="card">
+  <h4 class="text-center">Start Quiz</h4>
+  <input type="text" id="userName" class="form-control mb-3" placeholder="Enter your name">
+  <button class="btn btn-primary w-100" onclick="startQuiz()">Start</button>
+</div>
+
+<!-- Quiz Section -->
+<div id="quizSection" class="card">
+  <div class="d-flex justify-content-between align-items-center">
+    <h5 id="userDisplayName"></h5>
+    <div class="timer">Time Left: <span id="time">5400</span>s</div>
+  </div>
+  <hr>
+  <div id="questionGroup"></div>
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-secondary" id="prevBtn">Previous</button>
+    <button class="btn btn-primary" id="nextBtn">Next</button>
+    <button class="btn btn-success d-none" id="submitBtn">Submit</button>
+  </div>
+</div>
+
+<!-- Result -->
+<div id="resultBox" class="card text-center" style="display:none;"></div>
+<script>
+const questions = [
+  { text: "Q1: The velocity of the bullet becomes one third after it penetrates 4cm in a wooden block. Assuming that bullet is facing constant resistance during its motion in the block. The bullet stops completely after travelling at (4+x)cm inside the block. The value of x is:", options: ["2.0", "1.0", "0.5", "1.5"], answer: "0.5" },
+  { text: "Q2: Two trains 'A' and 'B' of length 'l' and '4l' are travelling into a tunnel of length 'L' in parallel tracks from opposite directions with velocities 108km/h and 72 km/h, respectively. If trains 'A' takes 35 s less time than train 'B' to cross the tunnel then, length 'L' of tunnel is:(Given L=600)", options: ["1200m", "2700m", "1800m", "900m"], answer: "1800m" },
+  { text: "Q3: A child stands on the edge of the cliff 10m above the grounds and throws a stone horizontally with an initial speed of 5 ms-1. Neglecting the resistance, the speed with the stone with which the stone hits the ground will be____ ms-1(given, g=10ms-2)?", options: ["15", "20", "30", "25"], answer: "15" },
+  { text: "Q4: The initial speed of a bullet fired from a rifle is 630m/s. The rifle is fired at the centre of a target 700m away at the same level as the target. How far above the centre of the target the rifle must be aimed in order to hit the target?", options: ["1.0m", "4.2m", "6.1m", "9.8m"], answer: "6.1m" },
+  { text: "Q5: A bullet 10g leaves the barrel of gun with the velocity of 600m m/s.If the barrel of gun is 50cm long and mass of gun is 3kg, then the value of impulse supplied to the gun will be:", options: ["12Ns", "6Ns", "36Ns", "3Ns"], answer: "6Ns" },
+  { text: "Q6: A player caught a cricket ball of a mass 150g moving at a rate of 20 m/s. If the catching process is completed in 0.1s, the force of the blow exerted by the ball on the hand of the player is equal to?", options: ["150N", "3N", "30N", "300N"], answer: "30N" },
+  { text: "Q7: A wire of resistance R is bent into an equilateral triangle and an identical wire is bent into a square. The ratio of resistance between the two ends points of an edge of the triangle to that of the square is", options: ["9/8", "8/9", "27/32", "32/27"], answer: "32/27" },
+  { text: "Q8: A battery is used to charge a parallel plate capacitor till the potential difference between the plates becomes equal to the electromotive force the battery. The ratio of the stored in the capacitor and the work done by the battery will be?", options: ["1/2", "1", "2", "1/4"], answer: "1/2" },
+  { text: "Q9: A paramagnetic sample shows a net magnetisation of 6A/m when it is placed in an external magnetic field of 0.4T at a temperature of 4K. When the sample is placed in an external magnetic field of 0.3T at a temperature of 24k, then the magnetisation will be:?", options: ["1A/m", "4A/m", "2.25A/m", "0.75A/m"], answer: "0.75A/m" },
+  { text: "Q10: Two streams of photons, possessing energies equal to five and ten times the work function of metal are incident on the metal surface successively. The ratio of maximum velocities of the photoelectron emitted, in the two cases respectively, will be?", options: ["1:2", "1:3", "2:3", "3:2"], answer: "1:3" },
+  { text: "Q11: Let n<2 be an integer. Suppose that there are n Metro stations in a city located along a circular path. Each pair of stations is connected by a straight track only. Further, each pair of nearest stations are connected by red line. If the number of red lines is 99 times the number of blue lines.then the value of n is:?", options: ["201", "200", "101", "199"], answer: "201" },
+  { text: "Q12: A man X has 7 friends, 4 of them are ladies and 3 are men. His wife Y also has 7 friends, 3 of them are ladies and 4 are men. Assume X and Y have no common friends. then the total number ways in which X and Y together can throw a party inviting 3 ladies and 3 men, so that 3 friends of each of X and Y are in the party, is:?", options: ["484", "485", "468", "469"], answer: "485" },
+  { text: "Q13: The number of ways to distribute 30 identical candies among four children c1, c2, c3, and c4 so that c2 receives atleast 4 and atmost 7 candies, c3 receives atleast 2 and atmost 6 candies, is equal to?", options: ["205", "615", "510", "430"], answer: "430" },
+  { text: "Q14: A circle C of radius 2 lies in the second quadrant and touches both the coordinate axes. Let r be the radius of a circle that the centre at the point (2,5) and interests the circle C at exactly two points. If the set of all possible values of r in the interval (x,y),, then 3y-2x is equal to:", options: ["15", "14", "12", "10"], answer: "15" },
+  { text: "Q15: A committee of 4 persons is to formed from 2 ladies, 2 old men, and 4 young men such that it includes at least 1 old man and at most 2 young men. Then the total number of of ways in which this committee can be formed is: ?", options: ["40", "41", "16", "32"], answer: "41" },
+  { text: "Q16: From 6 different novels and 3 different dictionaries, 4 novels and 1 dictionary are to be selected and arranged in a row on a shelf so that the dictionary is always is always in the middle. The number of such arrangements is:", options: ["less than 500", "at least 500 but less than 750", "at least 750 but less than 1000", "at least 1000"], answer: "at least 1000" },
+  { text: "Q17: Three distinct points A, B and C are given in the 2-dimensional coordinates plane suc that the ratio of the distance of any one of them from the point (1,0) to the distance from the point (-1,0) is equal to 1/3. Then the circumcentre of the triangle ABC is at the points:", options: ["(5/4,0)", "(5/2,0)", "(5/3,0)", "(0,0)"], answer: "(5/4,0)" },
+  { text: "Q18: Bag 6 contains 2 white, 1 black and 3 reds balls and bag B contains 3 black, 2 red and n white balls.One bag chosen at random and 2 balls drawn from it at random, are found to be 1 red and 1 black. If the probability that both balls come from Bag A is 6/11, then n is equal to.", options: ["13", "6", "4", "3"], answer: "4" },
+  { text: "Q19: Words with or without meaning are to be formed using all the letters of the word EXAMINATION. The probability that the letter M appears at the fourth position in any such word is:", options: ["1/66", "1/11", "1/9", "2/11"], answer: "1/11" },
+  { text: "Q20: A box 'A' contains 2 white, 3 red and 2 black balls. Another box 'B' contains 4 white, 2 red and 3 black balls. If two balls area drawn at random, without replaceemnt, from a randomly selected box and one ball turns out to be white while the other ball turns out to be red, the the probability that both balls are drawn from box 'B' is", options: ["7/16", "9/32", "7/8", "9/16"], answer: "7/16" },
+  { text: "Q21: Althrough CN- ion and N2 molecule are isoelectrnic, yet N2 molecule is chemically insert because of", options: ["presence of more number of electrons in bonding orbitals", "low bond energy", "absence of bond polarity", "uneven electron distribution"], answer: "absence of bond polarity"},
+  { text: "Q22: Which one of the following properties is not shown by NO?", options: ["It is diamagnetic in gaseous state", "It is neutral oxide", "It combines with oxygen to form nitrogen dioxide", "Its bond order is 2.5"], answer: "It is diamagnetic in gaseous state"},
+  { text: "Q23: Using column chromatography, mixture of two compounds 'A' and 'B' was separated. 'A' eluted first, this indicates 'B' has", options: ["low Rp weaker adsorption", "high Rp stronger adsorption", "high Rp weaker adsorption", "low Rp stronger adsorption"], answer: "low Rp stronger adsorption"},
+  { text: "Q24: In Carius tube, an organic compound 'X' is treated with sodium peroxide to form a mineral acid 'Y'. The solution of BacI2 is added to 'Y' to form a precipitate 'Z','Z', is used for the quantitative estimation of an extra element. 'X' could be:", options: ["Cytosine", "Chloroxylenol", "A nucleotide", "Methionine"], answer: "Methionine"},
+  { text: "Q25: An open beaker of water in equilibrium with water vapour is in a sealed container. When a few grams of glucose are added to the beaker of water, the rate at which water molecules:", options: ["leaves the vapour increases", "leaves the solution increases", "leaves the solution decreases", "leaves the vapour decreases"], answer: "leaves the vapour increase" },
+  { text: "Q26: Liquids A and B form an ideal solution. At 30 degree celsius, the total vapour pressure of a solution containing 1 mol of A and 2 mol of B is 250mm Hg. The total vapour pressure becomes 300 mm Hg when 1 more mol of A is added to the first solution. The vapour pressures of pure A and B at the same temperature are ", options: ["150, 450 mm Hg", "125, 150 mm Hg", "450, 150 mm Hg", "250, 300 mm Hg"], answer: "450, 150 mm Hg" },
+  { text: "Q27: When an electric current is passes through acidified water, 112 mL of hydrogen gas at N.T.P was collected at the cathode in 965 seconds. The current passed, in ampere, is:", options: ["2.0", "0.1", "0.5", "1.0"], answer: "1.0" },
+  { text: "Q28: A current of 10.0A flows for 2.00h through an electrolytic cell containing a molten salt of metal X. This results in the decomposition of 0.250 mol of metal X at the cathode. The oxidation state of X in the molten salt is: (F = 96,500 C)", options: ["1+", "2+", "3+", "4+"], answer: "3+" },
+  { text: "Q29: Which of the following complexes will show geometrical isomerism?", options: ["Potassium tris(oxalato) chromate(III)", "Pentaaquachlorochromium (III) chloride", "Aquachlorobis(ethylendianmine) cobalt(II) chloride", "Potassium amminetrichloroplatinate(II)"], answer: "Aquachlorobis(ethlyendianmine)"},
+  { text: "Q30: A reaction of colab(III) chloride and ethylenediamine in a 1:2 mole ratio generates two isomeric products A (violet coloured) and B (green coloured). A can show optical activity, but, B is optically inactive. What type of isomers does A and B represent?", options: ["Geometrical isomers", "Coordination isomers", "Linkage isomers", "Ionisation isomers"], answer: "Geometrical isomers" }
+];
+
+const selectedAnswers = new Array(questions.length).fill(null);
+let userName = "", page = 0, perPage = 3;
+let timeLeft = 5400, timer;
+
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim();
+  if (!userName) return alert("Please enter your name");
+
+  document.getElementById("loginSection").style.display = "none";
+  document.getElementById("quizSection").style.display = "block";
+  document.getElementById("userDisplayName").textContent = "Welcome, " + userName;
+
+  loadPage(page);
+
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      submitQuiz();
+    }
+  }, 1000);
+}
+
+function loadPage(p) {
+  const start = p * perPage;
+  const end = Math.min(start + perPage, questions.length);
+  const group = document.getElementById("questionGroup");
+  group.innerHTML = "";
+
+  for (let i = start; i < end; i++) {
+    const q = questions[i];
+    const opts = q.options.map(opt => `
+      <label class="option">
+        <input type="radio" name="q${i}" value="${opt}" ${selectedAnswers[i] === opt ? "checked" : ""}>
+        ${opt}
+      </label>
+    `).join("");
+    group.innerHTML += `
+      <div class="question-box">
+        <h6>${q.text}</h6>
+        ${opts}
+      </div>
+    `;
+  }
+
+  document.getElementById("prevBtn").disabled = page === 0;
+  document.getElementById("nextBtn").classList.toggle("d-none", end >= questions.length);
+  document.getElementById("submitBtn").classList.toggle("d-none", end < questions.length);
+}
+
+function saveAnswers() {
+  for (let i = 0; i < questions.length; i++) {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected) selectedAnswers[i] = selected.value;
+  }
+}
+
+document.getElementById("nextBtn").onclick = () => {
+  saveAnswers();
+  if ((page + 1) * perPage < questions.length) {
+    page++;
+    loadPage(page);
+  }
+};
+
+document.getElementById("prevBtn").onclick = () => {
+  saveAnswers();
+  if (page > 0) {
+    page--;
+    loadPage(page);
+  }
+};
+
+document.getElementById("submitBtn").onclick = () => {
+  saveAnswers();
+  submitQuiz();
+};
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (selectedAnswers[i] === q.answer) score++;
+  });
+
+  document.getElementById("quizSection").style.display = "none";
+  document.getElementById("resultBox").style.display = "block";
+  document.getElementById("resultBox").innerHTML = `
+    <h3>Quiz Completed</h3>
+    <p><strong>Name:</strong> ${userName}</p>
+    <p><strong>Score:</strong> ${score} / ${questions.length}</p>
+    <p><strong>Time Taken:</strong> ${3600 - timeLeft} seconds</p>
+  `;
+  clearInterval(timer);
+}
+</script>
+</body>
+</html> 
